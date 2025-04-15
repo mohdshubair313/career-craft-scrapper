@@ -18,10 +18,11 @@ import { scrapeShopifyJobs } from "./scrapers/shopify.js";
 import { scrapeSentry } from './scrapers/sentry.js'
 import { scrapeSegmentJobs } from "./scrapers/segment.js";
 import { scrapeAuth0Jobs } from './scrapers/auth0.js'
+import { scrapetoptaljobs } from "./scrapers/topTal.js";
 import { scrapeZappierJobs } from "./scrapers/Zappier.js";
 import { NetflixJobScrapper } from "./scrapers/Netflix.js";
-import { lyftJobScrapper } from "./scrapers/lyft.js";
 import { scrapeAtlassianLoomJobs } from "./scrapers/atlassianLoom.js";
+import { scrapegitlabjobs} from "./scrapers/gitlab.js";
 
 async function main() {
   let browser;
@@ -46,11 +47,10 @@ async function main() {
     // const flipkartJobs = await scrapeFlipkartJobs(browser);
     // logger.info(`Found ${flipkartJobs.length} Flipkart jobs`);
 
-    // // Scrape Airbnb jobs
+    // Scrape Airbnb jobs
     //logger.info("Starting Airbnb job scraping");
     //const airbnbJobs = await scrapeAirbnbJobs(browser);
     //logger.info(`Found ${airbnbJobs.length} Airbnb jobs with details`);
-
 
     // logger.info("Starting Slack job scraping");
     // const slackJobs = await scrapeSlackJobs(browser);
@@ -86,6 +86,14 @@ async function main() {
     // const segmentJobs = await scrapeSegmentJobs(browser);
     // logger.info(`Found ${segmentJobs.length} Segment jobs`);
     
+    const sentryJobs = await scrapeSentry(browser);
+    logger.info(`Found ${sentryJobs.length} sentry jobs`);
+    const auth0Jobs = await scrapeAuth0Jobs(browser);
+    logger.info(`Found ${auth0Jobs.length} Auth0 jobs`);
+
+    // scrape Toptal jobs
+    const toptalJobs= await scrapetoptaljobs(browser);
+    logger.info(`Found ${toptalJobs.length} Toptal jobs`)
     // const sentryJobs = await scrapeSentry(browser);
     // logger.info(`Found ${sentryJobs.length} sentry jobs`);
     // const auth0Jobs = await scrapeAuth0Jobs(browser);
@@ -104,8 +112,19 @@ async function main() {
     // logger.info(`Found ${lyftJob.length} lyftJob jobs with valid description`);
 
     // scrape the atlassianLoom Jobs
-    const atlassianLoom = await scrapeAtlassianLoomJobs(browser);
-    logger.info(`Found ${atlassianLoom.length} AtlassianLoom jobs with valid description`);
+    // const atlassianLoom = await scrapeAtlassianLoomJobs(browser);
+    // logger.info(`Found ${atlassianLoom.length} AtlassianLoom jobs with valid description`);
+
+    //scrape the Gitlab Jobs
+    //const gitlabJobs = await scrapeGitlabjobs (browser);
+    //loggger.info(`found ${gitlabJobs.length} gitlab jobs`);
+
+
+    //scrape the Stripe Jobs
+    const stripe = await scrapeStripeJobs(browser);
+    logger.info(`Found ${stripe.length} stripe jobs with valid description`);
+
+ 
 
 
     // Combine all jobs
@@ -126,6 +145,12 @@ async function main() {
       // Add other job arrays here when uncommented
 
       // ...atlassianJobs,
+      ...shopifyjobs,
+      ...duckduckgoJobs,
+      ...segmentJobs,
+      ...sentryJobs,
+      ...auth0Jobs,
+      ...toptalJobs,
       // ...shopifyjobs,
       // ...duckduckgoJobs,
       // ...segmentJobs,
@@ -137,6 +162,7 @@ async function main() {
       ...atlassianLoom
     ];
 
+    
     // Filter and process jobs
     allJobs = allJobs.map(validateAndNormalizeJob).filter(Boolean);
     logger.info(`Total valid jobs after normalization: ${allJobs.length}`);
